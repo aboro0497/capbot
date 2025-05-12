@@ -1,0 +1,15 @@
+# Ignore raw Excel data
+data/historical/raw/
+
+# Optionally ignore processed output
+data/historical/processed/*.csv
+data/historical/processed/*.xlsx
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Editor and OS junk
+.vscode/
+.DS_Store
+

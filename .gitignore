@@ -1,15 +1,23 @@
-# Ignore raw Excel data
+# 🔢 Historical data
 data/historical/raw/
-
-# Optionally ignore processed output
 data/historical/processed/*.csv
 data/historical/processed/*.xlsx
 
-# Python cache
+# 📊 Live scraped data
+data/current/*.csv
+!data/current/match_tracker.csv         # keep the main tracker
+!data/current/matches_upcoming.csv     # keep snapshots if needed
+!data/current/matches_inplay.csv
+!data/current/matches_finished.csv
+
+# 🗂️ Backup files
+data/current/match_tracker.backup_*.csv
+data/backup/
+
+# 🐍 Python cache
 __pycache__/
 *.pyc
 
-# Editor and OS junk
+# 🛠️ Editor + OS
 .vscode/
 .DS_Store
-

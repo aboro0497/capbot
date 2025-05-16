@@ -1,15 +1,28 @@
-# 📁 Historical data
+# 📁 Historical data - ignore all raw + processed output files
 data/historical/raw/
 data/historical/processed/*.csv
 data/historical/processed/*.xlsx
 
-# 📁 Current scraped output (ignore all except tracker if needed)
+# 📁 API-tennis output (only keep code/scripts, ignore JSONs)
+data/api-tennis/json/
+data/api-tennis/processed/*.csv
+
+# 📁 Current scraped output (ignore all except match_tracker.csv)
 data/current/*.csv
-!data/current/match_tracker.csv  # (optional: keep if tracking in repo)
+!data/current/match_tracker.csv
+data/current/*.xlsx
+
+# 🗂️ Audit outputs (keep script only)
+data/audit/*.xlsx
 
 # 🗂️ Backups
-data/current/match_tracker.backup_*.csv
 data/backup/
+data/current/match_tracker.backup_*.csv
+
+# 📁 Odds + News Outputs
+data/odds/*.json
+data/odds/*.csv
+data/news_signals/
 
 # 🐍 Python cache
 __pycache__/
@@ -19,7 +32,11 @@ __pycache__/
 .vscode/
 .DS_Store
 
-# ⚠️ Specific generated match snapshots to ignore
-matches_inplay.csv
-matches_finished.csv
-matches_upcoming.csv
+# 🚫 Local logs/debug files
+*.log
+*.tmp
+
+# ⚠️ Common snapshot files to exclude if present
+data/current/matches_inplay.csv
+data/current/matches_finished.csv
+data/current/matches_upcoming.csv

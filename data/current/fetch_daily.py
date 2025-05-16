@@ -222,6 +222,7 @@ def update_tracker(matches):
         added, updated, removed, removed_ids = len(combined), 0, 0, set()
 
     combined.to_csv(TRACKER_FILE, index=False)
+    combined.to_excel(os.path.join(OUT_DIR, "match_tracker.xlsx"), index=False) 
     combined[combined.status == "upcoming"].to_csv(os.path.join(OUT_DIR, "matches_upcoming.csv"), index=False)
     combined[combined.status == "inplay"].to_csv(os.path.join(OUT_DIR, "matches_inplay.csv"), index=False)
     combined[combined.status == "finished"].to_csv(os.path.join(OUT_DIR, "matches_finished.csv"), index=False)

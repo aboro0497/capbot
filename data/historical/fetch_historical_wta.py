@@ -2,8 +2,11 @@
 
 import os
 import pandas as pd
+import hashlib
 import requests
 from bs4 import BeautifulSoup
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 RAW_DIR = "data/historical/raw"
 CSV_OUT = "data/historical/processed/matches_2015_2025_wta.csv"
@@ -55,6 +58,10 @@ def scrape_and_download():
 
     print("\n✅ All .xlsx files downloaded to raw/ directory.\n")
 
+def generate_match_id(row):
+    key = f"{row['date']}_{row['player_A']}_{row['player_B']}".lower().replace(" ", "_")
+    return hashlib.md5(key.encode()).hexdigest()[:10]
+
 def load_and_clean_wta():
     all_matches = []
 
@@ -71,7 +78,6 @@ def load_and_clean_wta():
             print(f"❌ Failed to read {file_path}: {e}")
             continue
 
-        print(f"📊 Columns in {file}: {df.columns.tolist()}")
         df.columns = [c.strip().lower() for c in df.columns]
 
         if df.columns[0] != "wta":
@@ -108,24 +114,38 @@ def load_and_clean_wta():
             year = None
 
         df["season"] = year
-        df["player_A"] = df["player_A"].astype(str).str.title()
-        df["player_B"] = df["player_B"].astype(str).str.title()
+        df["player_A"] = df["player_A"].astype(str).str.strip().str.title()
+        df["player_B"] = df["player_B"].astype(str).str.strip().str.title()
+
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df = df[df["date"] <= pd.Timestamp.today()]
+        df.dropna(subset=["player_A", "player_B", "date"], inplace=True)
+
+        df["date"] = df["date"].dt.strftime("%Y-%m-%d")
+        df["time"] = "00:00"
         df["winner_code"] = "A"
 
-        df.dropna(subset=["player_A", "player_B", "date"], inplace=True)
         df.drop_duplicates(inplace=True)
+
+        df["match_id"] = df.apply(generate_match_id, axis=1)
+
         all_matches.append(df)
 
     if all_matches:
         os.makedirs(os.path.dirname(CSV_OUT), exist_ok=True)
         final_df = pd.concat(all_matches, ignore_index=True)
 
-        # ✅ Save CSV (for ML)
-        final_df.to_csv(CSV_OUT, index=False)
+        column_order = [
+            "match_id", "date", "time", "player_A", "player_B",
+            "rank_A", "rank_B", "pts_A", "pts_B", "odds_A", "odds_B",
+            "surface", "series", "court", "round", "season", "winner_code"
+        ]
+        for col in column_order:
+            if col not in final_df.columns:
+                final_df[col] = ""
 
-        # ✅ Save Excel (for inspection)
+        final_df = final_df[column_order]
+        final_df.to_csv(CSV_OUT, index=False)
         final_df.to_excel(XLSX_OUT, index=False)
 
         print(f"\n✅ Done. Final WTA matches saved: {len(final_df)} rows.")

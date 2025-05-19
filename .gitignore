@@ -22,6 +22,7 @@ data/current/match_tracker.backup_*.csv
 # 📁 Odds + News Outputs
 data/odds/*.json
 data/odds/*.csv
+data/odds/*.xlsx
 data/news_signals/
 
 # 🐍 Python cache
